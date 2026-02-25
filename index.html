@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itzfizz - Car Scroll Animation</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+        
+        /* Hero Section - Full Screen */
+        #hero {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+        
+        /* Content container */
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            color: white;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        /* Headline */
+        .headline {
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: white;
+            margin-bottom: 2rem;
+            opacity: 0; /* Shuru mein hide rahega */
+            transform: translateY(50px); /* Niche se upar aane ke liye */
+        }
+        
+        /* Statistics */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            opacity: 0; /* Shuru mein hide rahega */
+            transform: translateY(30px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        /* Road line */
+        .road-line {
+            position: absolute;
+            bottom: 150px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            z-index: 5;
+        }
+        
+        .road-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100%;
+            background: #ff6b6b;
+            animation: moveLine 3s linear infinite;
+        }
+        
+        @keyframes moveLine {
+            0% { left: -100px; }
+            100% { left: 100%; }
+        }
+        
+        /* Car Container */
+        #car-container {
+            position: absolute;
+            bottom: 100px;
+            left: -300px;
+            z-index: 20;
+            width: 400px;
+            filter: drop-shadow(0 20px 20px rgba(0,0,0,0.5));
+        }
+        
+        /* Car SVG */
+        .car-svg {
+            width: 100%;
+            height: auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .headline {
+                font-size: 2.5rem;
+                letter-spacing: 0.2em;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            #car-container {
+                width: 250px;
+                bottom: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <section id="hero">
+        <div class="content">
+            <h1 class="headline">WELCOME ITZFIZZ</h1>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">CLIENT SATISFACTION</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">PROJECTS DONE</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">SUPPORT</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="road-line"></div>
+        
+        <div id="car-container">
+            <svg class="car-svg" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="200" y="150" width="400" height="100" rx="20" fill="#ff6b6b"/>
+                <rect x="250" y="100" width="300" height="70" rx="15" fill="#ff8787"/>
+                <rect x="280" y="120" width="80" height="40" rx="5" fill="#333"/>
+                <rect x="400" y="120" width="80" height="40" rx="5" fill="#333"/>
+                <circle cx="300" cy="250" r="40" fill="#222"/>
+                <circle cx="300" cy="250" r="25" fill="#444"/>
+                <circle cx="500" cy="250" r="40" fill="#222"/>
+                <circle cx="500" cy="250" r="25" fill="#444"/>
+                <circle cx="200" cy="180" r="15" fill="#ffd966"/>
+                <circle cx="600" cy="180" r="15" fill="#ffd966"/>
+                <line x1="350" y1="150" x2="350" y2="190" stroke="#fff" stroke-width="3"/>
+                <line x1="450" y1="150" x2="450" y2="190" stroke="#fff" stroke-width="3"/>
+            </svg>
+        </div>
+    </section>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        
+        window.addEventListener('load', () => {
+            
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#hero",
+                    start: "top top",
+                    end: "+=2500", // Kitna lamba scroll karna padega
+                    scrub: 1.5, // Smoothness add karta hai
+                    pin: true, // Single page ko screen par lock rakhega
+                    markers: false 
+                }
+            });
+
+            // 1. Background dark hona
+            tl.to("#hero", { backgroundColor: "#121212", duration: 1 }, 0);
+            
+            // 2. Car ko screen ke ekdum bahar tak bhejna
+            tl.to("#car-container", { x: "150vw", ease: "none", duration: 1 }, 0);
+            
+            // 3. Welcome Text ko appear karwana (Jab car thodi aage aa jaye tab)
+            // '0.2' ka matlab hai car thodi aage aane ke baad ye start hoga
+            tl.to(".headline", { opacity: 1, y: 0, duration: 0.4 }, 0.2);
+
+            // 4. Stats ko ek-ek karke appear karwana (stagger se 1 by 1 aayenge)
+            tl.to(".stat-item", { opacity: 1, y: 0, duration: 0.4, stagger: 0.15 }, 0.3);
+            
+            console.log("Single Page Car Pin Animation Ready! 🚗");
+        });
+    </script>
+</body>
+</html>
